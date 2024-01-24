@@ -77,22 +77,31 @@ public class EmployeeServiceImpl implements EmployeeService {
             List<Employee> employeeFilterList = Arrays.stream(employees).filter(e -> e.getName().equals(name)).toList();
 
             if(employeeFilterList.size() == 1) {
+
                 Employee employee = employeeFilterList.get(0);
+
                 List<Employee> employeeList = new ArrayList<>();
+
                 employeeList.add(employee);
 
                 rootTreeNode = new TreeNode(employee);
 
                 if(employee.getManagerId() != null) {
+
                     rootTreeNode = getManager(rootTreeNode, employeeList, employees, employee);
+
                 } else {
-                    return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "“Unable to process employee hierarchy. "+name+" not having hierarchy"));
+
+                    return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "Unable to process employee hierarchy. "+name+" not having hierarchy"));
                 }
             } else if(employeeFilterList.size() > 1) {
+
                 List<String> multipleManagers = new ArrayList<>();
-                for (Employee e :
-                        employeeFilterList) {
+
+                for (Employee e : employeeFilterList) {
+
                     Employee employee = Arrays.stream(employees).filter(emp -> emp.getId().equals(e.getManagerId())).toList().get(0);
+
                     multipleManagers.add(employee.getName());
                 }
 

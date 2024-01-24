@@ -23,12 +23,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> getEmployee(@RequestParam(name = "name", required = false, defaultValue = "") String name
-    ) throws IOException {
+    public ResponseEntity<Object> getEmployee(@RequestParam(name = "name", required = false, defaultValue = "") String name) throws IOException {
 
-        ResponseEntity<Object> response = employeeService.getEmployee(name);
-
-        return response;
+        return employeeService.getEmployee(name);
     }
 
     @GetMapping()
