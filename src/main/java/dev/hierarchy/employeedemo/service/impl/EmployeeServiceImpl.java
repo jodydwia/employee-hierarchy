@@ -8,12 +8,13 @@ import dev.hierarchy.employeedemo.payload.EmployeeResponse;
 import dev.hierarchy.employeedemo.payload.ResponseHandler;
 import dev.hierarchy.employeedemo.service.EmployeeService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,16 +27,42 @@ public class EmployeeServiceImpl implements EmployeeService {
     private String jsonPath;
     private final ModelMapper modelMapper;
 
+    @Autowired
     public EmployeeServiceImpl(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
     private Employee[] getEmployees() throws IOException {
+
         ObjectMapper mapper = new ObjectMapper();
 
-        Employee[] employees = mapper.readValue(new File(jsonPath), Employee[].class);
+        return mapper.readValue(new ClassPathResource(jsonPath).getFile(), Employee[].class);
+    }
 
-        return employees;
+    private TreeNode getManager(TreeNode rootTreeNode, List<Employee> employeeList, Employee[] employees, Employee employee) {
+
+        if (employee.getManagerId() != null) {
+
+            Employee manager = Arrays.stream(employees).filter(emp -> emp.getId().equals(employee.getManagerId())).toList().get(0);
+
+            employeeList.add(manager);
+
+            List<TreeNode> employeeNodeList = new ArrayList<>();
+
+            TreeNode managerNode = new TreeNode(manager);
+
+            employeeNodeList.add(managerNode);
+
+            if(rootTreeNode.getChildNodes().size() == 0) {
+                rootTreeNode.addChild(managerNode);
+            } else {
+                rootTreeNode.getChildNodes().get(rootTreeNode.getChildNodes().size() - 1).setChildNodes(employeeNodeList);
+            }
+
+            return getManager(rootTreeNode, employeeList, employees, manager);
+        } else {
+            return rootTreeNode;
+        }
     }
 
     @Override
@@ -49,14 +76,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 
             List<Employee> employeeFilterList = Arrays.stream(employees).filter(e -> e.getName().equals(name)).toList();
 
-            if(employeeFilterList.size() > 0) {
+            if(employeeFilterList.size() == 1) {
                 Employee employee = employeeFilterList.get(0);
                 List<Employee> employeeList = new ArrayList<>();
                 employeeList.add(employee);
 
                 rootTreeNode = new TreeNode(employee);
 
-                rootTreeNode = getManager(rootTreeNode, employeeList, employees, employee);
+                if(employee.getManagerId() != null) {
+                    rootTreeNode = getManager(rootTreeNode, employeeList, employees, employee);
+                } else {
+                    return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "“Unable to process employee hierarchy. "+name+" not having hierarchy"));
+                }
+            } else if(employeeFilterList.size() > 1) {
+                List<String> multipleManagers = new ArrayList<>();
+                for (Employee e :
+                        employeeFilterList) {
+                    Employee employee = Arrays.stream(employees).filter(emp -> emp.getId().equals(e.getManagerId())).toList().get(0);
+                    multipleManagers.add(employee.getName());
+                }
+
+                return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "Unable to process employee tree. Linton has multiple managers: " + multipleManagers.toString().replace("[", "").replace("]", "")));
             } else {
                 return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "Employee with the name " +name+ " was not found"));
             }
@@ -72,30 +112,5 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee[] employees = getEmployees();
 
         return Arrays.stream(modelMapper.map(employees, EmployeeResponse[].class)).toList();
-    }
-
-    private TreeNode getManager(TreeNode rootTreeNode, List<Employee> employeeList, Employee[] employees, Employee employee) {
-        if (employee.getManagerId() != null) {
-
-                Employee manager = Arrays.stream(employees).filter(emp -> emp.getId().equals(employee.getManagerId())).toList().get(0);
-
-                employeeList.add(manager);
-
-                List<TreeNode> employeeNodeList = new ArrayList<>();
-
-                TreeNode managerNode = new TreeNode(manager);
-
-                employeeNodeList.add(managerNode);
-
-                if(rootTreeNode.getChildNodes().size() == 0) {
-                    rootTreeNode.addChild(managerNode);
-                } else {
-                    rootTreeNode.getChildNodes().get(rootTreeNode.getChildNodes().size() - 1).setChildNodes(employeeNodeList);
-                }
-
-                return getManager(rootTreeNode, employeeList, employees, manager);
-            } else {
-                return rootTreeNode;
-            }
     }
 }
