@@ -1,6 +1,5 @@
 package dev.hierarchy.employeedemo.controller;
 
-import dev.hierarchy.employeedemo.model.TreeNode;
 import dev.hierarchy.employeedemo.payload.EmployeeResponse;
 import dev.hierarchy.employeedemo.payload.ResponseHandler;
 import dev.hierarchy.employeedemo.service.EmployeeService;
@@ -12,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/employee")
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -25,12 +24,12 @@ public class EmployeeController {
     public ResponseEntity<Object> getEmployee(@RequestParam(name = "name", required = false, defaultValue = "") String name
     ) throws IOException {
 
-        TreeNode response = employeeService.getEmployee(name);
+        ResponseEntity<Object> response = employeeService.getEmployee(name);
 
-        return ResponseHandler.responseBuilder(HttpStatus.OK, response);
+        return response;
     }
 
-    @GetMapping("/all")
+    @GetMapping()
     public ResponseEntity<Object> getAllEmployee() throws IOException {
 
         List<EmployeeResponse> response = employeeService.getAllEmployee();

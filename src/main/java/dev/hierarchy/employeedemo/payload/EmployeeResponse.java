@@ -6,7 +6,9 @@ import lombok.Data;
 public class EmployeeResponse {
 
     private Integer id;
+
     private String name;
+
     private Integer managerId;
 
 }

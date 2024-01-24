@@ -8,10 +8,10 @@ import java.util.List;
 @Data
 public class TreeNode {
 
-    private Employee value;
+    private Object value;
     private List<TreeNode> childNodes;
 
-    public TreeNode(Employee value) {
+    public TreeNode(Object value) {
         this.value = value;
         this.childNodes = new LinkedList<>();
     }
@@ -20,7 +20,7 @@ public class TreeNode {
         this.childNodes.add(childNode);
     }
 
-    public Employee getValue() {
+    public Object getValue() {
         return value;
     }
 
