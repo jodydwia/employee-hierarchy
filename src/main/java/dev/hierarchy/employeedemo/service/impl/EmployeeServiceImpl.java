@@ -36,7 +36,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        return mapper.readValue(new ClassPathResource(jsonPath).getFile(), Employee[].class);
+        return mapper.readValue(new ClassPathResource(jsonPath).getInputStream(), Employee[].class);
     }
 
     private TreeNode getManager(TreeNode rootTreeNode, List<Employee> employeeList, Employee[] employees, Employee employee) {
