@@ -1,0 +1,157 @@
+{
+	"info": {
+		"_postman_id": "4311d3aa-a646-4c64-8165-a473921be5a9",
+		"name": "Employees Hierarchy -Jody Dwi A",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29866901"
+	},
+	"item": [
+		{
+			"name": "all[correct-employees]",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/api/v1/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"api",
+						"v1",
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search[correct-employees]",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9090/api/v1/employees/search?name=eveleen",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9090",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						"search"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "eveleen"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all[faulty-employees]",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9091/api/v1/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9091",
+					"path": [
+						"api",
+						"v1",
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search[faulty-employees]",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9091/api/v1/employees/search?name=keane",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9091",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						"search"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "keane"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all[another-faulty-employees]",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9093/api/v1/employees",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9093",
+					"path": [
+						"api",
+						"v1",
+						"employees"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "search[another-faulty-employees]",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:9093/api/v1/employees/search?name=linton",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "9093",
+					"path": [
+						"api",
+						"v1",
+						"employees",
+						"search"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "linton"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
