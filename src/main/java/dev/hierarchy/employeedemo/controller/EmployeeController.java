@@ -23,15 +23,15 @@ public class EmployeeController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> getEmployee(@RequestParam(name = "name", required = false, defaultValue = "") String name) throws IOException {
+    public ResponseEntity<Object> searchEmployee(@RequestParam(name = "name", required = false, defaultValue = "") String name) throws IOException {
 
-        return employeeService.getEmployee(name);
+        return employeeService.searchEmployee(name);
     }
 
     @GetMapping()
-    public ResponseEntity<Object> getAllEmployee() throws IOException {
+    public ResponseEntity<Object> getEmployees() throws IOException {
 
-        List<EmployeeResponse> response = employeeService.getAllEmployee();
+        List<EmployeeResponse> response = employeeService.getEmployees();
 
         return ResponseHandler.responseBuilder(HttpStatus.OK, response);
     }

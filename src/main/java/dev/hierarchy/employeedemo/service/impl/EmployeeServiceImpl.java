@@ -7,6 +7,7 @@ import dev.hierarchy.employeedemo.payload.ApiResponse;
 import dev.hierarchy.employeedemo.payload.EmployeeResponse;
 import dev.hierarchy.employeedemo.payload.ResponseHandler;
 import dev.hierarchy.employeedemo.service.EmployeeService;
+import dev.hierarchy.employeedemo.service.HierarchyService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,44 +27,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Value("${app.jsonPath}")
     private String jsonPath;
     private final ModelMapper modelMapper;
-    private TreeNode parentEmployee = null;
+
+    private final HierarchyService hierarchyService;
 
     @Autowired
-    public EmployeeServiceImpl(ModelMapper modelMapper) {
+    public EmployeeServiceImpl(ModelMapper modelMapper, HierarchyService hierarchyService) {
         this.modelMapper = modelMapper;
+        this.hierarchyService = hierarchyService;
     }
 
-    private Employee[] getEmployees() throws IOException {
+    @Override
+    public Employee[] mapEmployeeJsonToObject() throws IOException {
 
         ObjectMapper mapper = new ObjectMapper();
 
         return mapper.readValue(new ClassPathResource(jsonPath).getInputStream(), Employee[].class);
     }
 
-    private TreeNode getManager(TreeNode childEmployee, Employee[] employees, Employee employee) {
-
-        if (employee.getManagerId() != null) {
-
-            Employee manager = Arrays.stream(employees).filter(emp -> emp.getId().equals(employee.getManagerId())).toList().get(0);
-
-            parentEmployee = new TreeNode(manager);
-
-            parentEmployee.addChild(childEmployee);
-
-            childEmployee = parentEmployee;
-
-            return getManager(childEmployee, employees, manager);
-        } else {
-            return parentEmployee;
-        }
-    }
-
     @Override
-    public ResponseEntity<Object> getEmployee(String name) throws IOException {
+    public ResponseEntity<Object> searchEmployee(String name) throws IOException {
 
-        Employee[] employees = getEmployees();
+        Employee[] employees = mapEmployeeJsonToObject();
 
-        TreeNode employeeHierarchy = new TreeNode(new Employee());
+        TreeNode employeeHierarchy = null;
 
         if (name != null && !name.equals("")) {
 
@@ -73,11 +59,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
                 Employee employee = employeeFilterList.get(0);
 
-                employeeHierarchy = new TreeNode(employee);
-
                 if(employee.getManagerId() != null) {
 
-                    employeeHierarchy = getManager(employeeHierarchy, employees, employee);
+                    employeeHierarchy = hierarchyService.getHierarchy(new TreeNode(employee), employees, employee);
 
                 } else {
 
@@ -105,9 +89,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResponse> getAllEmployee() throws IOException {
+    public List<EmployeeResponse> getEmployees() throws IOException {
 
-        Employee[] employees = getEmployees();
+        Employee[] employees = mapEmployeeJsonToObject();
 
         return Arrays.stream(modelMapper.map(employees, EmployeeResponse[].class)).toList();
     }

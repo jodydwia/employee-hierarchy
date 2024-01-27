@@ -1,5 +1,6 @@
 package dev.hierarchy.employeedemo.service;
 
+import dev.hierarchy.employeedemo.model.Employee;
 import dev.hierarchy.employeedemo.payload.EmployeeResponse;
 import org.springframework.http.ResponseEntity;
 
@@ -8,8 +9,10 @@ import java.util.List;
 
 public interface EmployeeService {
 
-    ResponseEntity<Object> getEmployee(String name) throws IOException;
+    Employee[] mapEmployeeJsonToObject() throws IOException;
 
-    List<EmployeeResponse> getAllEmployee() throws IOException;
+    ResponseEntity<Object> searchEmployee(String name) throws IOException;
+
+    List<EmployeeResponse> getEmployees() throws IOException;
 
 }
