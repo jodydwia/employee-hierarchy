@@ -26,6 +26,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Value("${app.jsonPath}")
     private String jsonPath;
     private final ModelMapper modelMapper;
+    private TreeNode parentEmployee = null;
 
     @Autowired
     public EmployeeServiceImpl(ModelMapper modelMapper) {
@@ -39,29 +40,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         return mapper.readValue(new ClassPathResource(jsonPath).getInputStream(), Employee[].class);
     }
 
-    private TreeNode getManager(TreeNode rootTreeNode, List<Employee> employeeList, Employee[] employees, Employee employee) {
+    private TreeNode getManager(TreeNode childEmployee, Employee[] employees, Employee employee) {
 
         if (employee.getManagerId() != null) {
 
             Employee manager = Arrays.stream(employees).filter(emp -> emp.getId().equals(employee.getManagerId())).toList().get(0);
 
-            employeeList.add(manager);
+            parentEmployee = new TreeNode(manager);
 
-            List<TreeNode> employeeNodeList = new ArrayList<>();
+            parentEmployee.addChild(childEmployee);
 
-            TreeNode managerNode = new TreeNode(manager);
+            childEmployee = parentEmployee;
 
-            employeeNodeList.add(managerNode);
-
-            if(rootTreeNode.getChildNodes().size() == 0) {
-                rootTreeNode.addChild(managerNode);
-            } else {
-                rootTreeNode.getChildNodes().get(rootTreeNode.getChildNodes().size() - 1).setChildNodes(employeeNodeList);
-            }
-
-            return getManager(rootTreeNode, employeeList, employees, manager);
+            return getManager(childEmployee, employees, manager);
         } else {
-            return rootTreeNode;
+            return parentEmployee;
         }
     }
 
@@ -70,7 +63,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee[] employees = getEmployees();
 
-        TreeNode rootTreeNode = new TreeNode(new Employee());
+        TreeNode employeeHierarchy = new TreeNode(new Employee());
 
         if (name != null && !name.equals("")) {
 
@@ -80,15 +73,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 
                 Employee employee = employeeFilterList.get(0);
 
-                List<Employee> employeeList = new ArrayList<>();
-
-                employeeList.add(employee);
-
-                rootTreeNode = new TreeNode(employee);
+                employeeHierarchy = new TreeNode(employee);
 
                 if(employee.getManagerId() != null) {
 
-                    rootTreeNode = getManager(rootTreeNode, employeeList, employees, employee);
+                    employeeHierarchy = getManager(employeeHierarchy, employees, employee);
 
                 } else {
 
@@ -112,7 +101,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         }
 
-        return ResponseHandler.responseBuilder(HttpStatus.OK, rootTreeNode);
+        return ResponseHandler.responseBuilder(HttpStatus.OK, employeeHierarchy);
     }
 
     @Override
