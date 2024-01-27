@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.hierarchy.employeedemo.model.Employee;
 import dev.hierarchy.employeedemo.model.TreeNode;
 import dev.hierarchy.employeedemo.payload.ApiResponse;
+import dev.hierarchy.employeedemo.payload.EmployeeHierarchyResponse;
 import dev.hierarchy.employeedemo.payload.EmployeeResponse;
 import dev.hierarchy.employeedemo.payload.ResponseHandler;
 import dev.hierarchy.employeedemo.service.EmployeeService;
@@ -49,7 +50,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee[] employees = mapEmployeeJsonToObject();
 
-        TreeNode employeeHierarchy = null;
+        EmployeeHierarchyResponse employeeHierarchy = new EmployeeHierarchyResponse();
 
         if (name != null && !name.equals("")) {
 
