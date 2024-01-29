@@ -1,0 +1,2 @@
+docker build -t {image name} .
+docker run -d -p {port forward}:9090 {image name}
