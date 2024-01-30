@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                     multipleManagers.add(employee.getName());
                 }
 
-                return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "Unable to process employee tree. Linton has multiple managers: " + multipleManagers.toString().replace("[", "").replace("]", "")));
+                return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "Unable to process employee tree. "+name+" has multiple managers: " + multipleManagers.toString().replace("[", "").replace("]", "")));
             } else {
                 return ResponseHandler.responseBuilder(HttpStatus.NOT_FOUND, new ApiResponse(Boolean.FALSE, "Employee with the name " +name+ " was not found"));
             }
